@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Leaflet Test Page</title>
+	<base href=""></base>
+	
+
+	<link rel="stylesheet" href="leaflet/leaflet.css" />
+	<link rel="stylesheet" href="styles/style.css">
+	
+	<script src="leaflet/leaflet.js"></script>
+	<script src="leaflet/Leaflet.CanvasLayer-gh-pages/leaflet_canvas_layer.js"></script>
+	<script src="data/features.json"></script>
+	<script src="data/custom.geo.json"></script>
+	<script src="scripts/icons.js"></script>
+	<script src="scripts/weather.js"></script>
+</head>
+<body>
+	<div id="mapid"></div>
+	<script>
+		var countriesLayer;
+
+		function highlightFeature(e){
+			var layer = e.target;
+			layer.setStyle(
+				{
+					weight: 2,
+					color: '#747474',
+					fillColor: '#ad1c51',
+					fillOpacity: 0.6
+				}
+			);
+			if (!L.Browser.ie) {
+				layer.bringToFront();
+			}
+		}
+
+		function resetHighlight(e){
+			countriesLayer.resetStyle(e.target);
+		}
+
+		function zoomToFeature(e){
+			mymap.fitBounds(e.target.getBounds());
+		}
+
+		function countriesOnEachFeature(feature, layer){
+			layer.on(
+				{
+					mouseover: highlightFeature,
+					mouseout: resetHighlight,
+					click: zoomToFeature
+				}
+			);
+		}
+
+		function getCountryColor(SUBREGION){
+			switch (SUBREGION) {
+				case "Northern Europe":
+					return '#349725'
+				case "Southern Europe":
+					return '#e0c957'
+				case "Western Europe":
+					return '#676834'
+				case "Eastern Europe":
+					return '#5789e0'
+				default:
+					return '#999999'
+			}
+		}
+
+		function countriesStyle(feature){
+			return {
+				fillColor: getCountryColor(feature.properties.SUBREGION),
+				weight: 1,
+				opacity: 1,
+				color: 'white',
+				fillOpacity: 0.7
+			}
+		}
+
+		function markerStyle(weather) {
+			switch (weather) {
+				case 'rain':
+					return rainIcon
+				case 'sun':
+					return sunIcon
+				case 'clouds':
+					return cloudsIcon
+				case 'snow':
+					return snowIcon
+				case 'thunder':
+					return thunderIcon
+				case 'snowrain':
+					return snowrainIcon
+				default:
+					return sunIcon
+			}
+		}
+		
+		var mymap = L.map('mapid').setView([50.82, 30.34], 6);
+		mymap.setMaxBounds([[20,-25],[82,50]])
+
+		countriesLayer = L.geoJson(
+				europe, 
+				{
+					minZoom:4,
+					maxZoom:8,
+					style:countriesStyle,
+					onEachFeature: countriesOnEachFeature
+				}
+			).addTo(mymap);
+
+
+		// var OblLayer = L.geoJson(Kiev).addTo(mymap);
+		//OblLayer.bindPopup("Hello");
+
+		
+		// L.marker([kievRegion.lat, kievRegion.long],{icon: markerStyle(kievRegion.weather)}).addTo(mymap).bindPopup("День: "+kievRegion.minDayTemperature+"-"+kievRegion.maxDayTemperature+"<br>Ночь: "+kievRegion.minNightTemperature+"-"+kievRegion.maxNightTemperature).openPopup();
+		// L.marker([lutskRegion.lat, lutskRegion.long],{icon: markerStyle(lutskRegion.weather)}).addTo(mymap).bindPopup("День: "+lutskRegion.minDayTemperature+"-"+lutskRegion.maxDayTemperature+"<br>Ночь: "+lutskRegion.minNightTemperature+"-"+lutskRegion.maxNightTemperature);
+		// L.marker([odesskiyRegion.lat, odesskiyRegion.long],{icon: markerStyle(odesskiyRegion.weather)}).addTo(mymap).bindPopup("День: "+odesskiyRegion.minDayTemperature+"-"+odesskiyRegion.maxDayTemperature+"<br>Ночь: "+odesskiyRegion.minNightTemperature+"-"+odesskiyRegion.maxNightTemperature);
+		// L.marker([dniprovskiyRegion.lat, dniprovskiyRegion.long],{icon: markerStyle(dniprovskiyRegion.weather)}).addTo(mymap).bindPopup("День: "+dniprovskiyRegion.minDayTemperature+"-"+dniprovskiyRegion.maxDayTemperature+"<br>Ночь: "+dniprovskiyRegion.minNightTemperature+"-"+dniprovskiyRegion.maxNightTemperature);
+		// L.marker([lvivRegion.lat, lvivRegion.long],{icon: markerStyle(lvivRegion.weather)}).addTo(mymap).bindPopup("День: "+lvivRegion.minDayTemperature+"-"+lvivRegion.maxDayTemperature+"<br>Ночь: "+lvivRegion.minNightTemperature+"-"+lvivRegion.maxNightTemperature);
+
+		
+
+	</script>
+</body>
+</html>
